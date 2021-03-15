@@ -1,18 +1,18 @@
-require('chromedriver'); //variable mei isliye nhi liya kyunki hume koi zarurat nhi
+require('chromedriver');
 
 let wd = require('selenium-webdriver');
 let matchid = 35502;
 let browser = new wd.Builder().forBrowser('chrome').build(); // control the browser
 
 let batsmankeys = ['playerName', 'outType', 'runs', 'balls', 'fours', 'sixes', 'strikeRate'];
-let bowlerkeys = ['playerName', 'overs', 'maidens', 'runs', 'wickets', 'noball','wide','economy'];
+let bowlerkeys = ['playerName', 'overs', 'maidens', 'runs', 'wickets', 'noball', 'wide', 'economy'];
 
 let batsmanData = [];
 let bowlerData = [];
 
 let innings = 1;
 
-async function main(){
+async function main() {
 	await browser.get(`https://www.cricbuzz.com/live-cricket-scores/${matchid}`); //URL
 
 	await browser.wait(wd.until.elementLocated(wd.By.css('.cb-nav-bar a')));
@@ -39,16 +39,13 @@ async function main(){
 		batsmanData.push(data);
 	}
 
-
-
 	let bowlerrows = await alltables[1].findElements(wd.By.css('.cb-col.cb-col-100.cb-scrd-itms'));
 
-	for(i in bowlerrows){
-
+	for (i in bowlerrows) {
 		let bowlercols = await bowlerrows[i].findElements(wd.By.css('div'));
 		let data = {};
-		for(j in bowlercols){
-			data[bowlerkeys[j]] =  await bowlercols[j].getAttribute('innerText');
+		for (j in bowlercols) {
+			data[bowlerkeys[j]] = await bowlercols[j].getAttribute('innerText');
 		}
 		bowlerData.push(data);
 	}
@@ -56,6 +53,5 @@ async function main(){
 	console.log(batsmanData);
 	console.log(bowlerData);
 }
-
 
 main();
