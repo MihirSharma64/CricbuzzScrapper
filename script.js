@@ -27,16 +27,17 @@ async function main() {
 
 	let batsmanRow = await alltables[0].findElements(wd.By.css('.cb-col.cb-col-100.cb-scrd-itms'));
 
-	let length = batsmanRow.length;
-	for (let i = 0; i < length - 3; i++) {
+	for (let i = 0; i < batsmanRow.length; i++) {
 		let batsmanCol = await batsmanRow[i].findElements(wd.By.css('div'));
 		let data = {};
-		for (j in batsmanCol) {
-			if (j != 1) {
-				data[batsmankeys[j]] = await batsmanCol[j].getAttribute('innerText');
+		if(batsmanCol.length == 7){
+			for (j in batsmanCol) {
+				if (j != 1) {
+					data[batsmankeys[j]] = await batsmanCol[j].getAttribute('innerText');
+				}
 			}
+			batsmanData.push(data);
 		}
-		batsmanData.push(data);
 	}
 
 	let bowlerrows = await alltables[1].findElements(wd.By.css('.cb-col.cb-col-100.cb-scrd-itms'));
@@ -44,14 +45,18 @@ async function main() {
 	for (i in bowlerrows) {
 		let bowlercols = await bowlerrows[i].findElements(wd.By.css('div'));
 		let data = {};
-		for (j in bowlercols) {
-			data[bowlerkeys[j]] = await bowlercols[j].getAttribute('innerText');
+		if(bowlercols.length == 8){
+			for (j in bowlercols) {
+				data[bowlerkeys[j]] = await bowlercols[j].getAttribute('innerText');
+			}
+			bowlerData.push(data);
 		}
-		bowlerData.push(data);
 	}
 
 	console.log(batsmanData);
 	console.log(bowlerData);
+
+	await browser.close()
 }
 
 main();
