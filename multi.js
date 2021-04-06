@@ -1,0 +1,76 @@
+require('chromedriver');
+
+let wd = require('selenium-webdriver');
+let matchid = 35502;
+let browser = new wd.Builder().forBrowser('chrome').build(); // control the browser
+
+let batsmankeys = ['playerName', 'outType', 'runs', 'balls', 'fours', 'sixes', 'strikeRate'];
+let bowlerkeys = ['playerName', 'overs', 'maidens', 'runs', 'wickets', 'noball', 'wide', 'economy'];
+
+let batsmanData = [];
+let bowlerData = [];
+
+let innings = 1;
+let urls = [];
+
+async function main() {
+	await browser.get(`https://www.cricbuzz.com/live-cricket-scores/${matchid}`); //URL
+
+	await browser.wait(wd.until.elementLocated(wd.By.css('.cb-nav-bar a')));
+
+	//////////////////////////////// Click the scorecard button///////////////////////
+	let navbarbuttons = await browser.findElements(wd.By.css('.cb-nav-bar a'));
+	await navbarbuttons[1].click();
+	//////////////////////////////////////////////////////////////////////////////////
+
+	await browser.wait(wd.until.elementLocated(wd.By.css(`#innings_${innings} .cb-col.cb-col-100.cb-ltst-wgt-hdr`))); //wait jab tak page load nhi hota
+	let alltables = await browser.findElements(wd.By.css(`#innings_${innings} .cb-col.cb-col-100.cb-ltst-wgt-hdr`));
+
+	let batsmanRow = await alltables[0].findElements(wd.By.css('.cb-col.cb-col-100.cb-scrd-itms'));
+	for (let i = 0; i < batsmanRow.length; i++) {
+		let batsmanCol = await batsmanRow[i].findElements(wd.By.css('div'));
+		let data = {};
+		if(batsmanCol.length == 7){
+			for (j in batsmanCol) {
+				if(j==0){
+					let url = await batsmanCol[j].findElement(wd.By.css('a')).getAttribute('href');
+					// console.log(url);
+					urls.push(url);
+					// urls.push((await batsmanCol[j].findElement(wd.By.css('a'))).getAttribute('href'));
+				}
+				if (j != 1) {
+					data[batsmankeys[j]] = await batsmanCol[j].getAttribute('innerText');
+				}
+			}
+			batsmanData.push(data);
+		}
+	}
+
+	let bowlerrows = await alltables[1].findElements(wd.By.css('.cb-col.cb-col-100.cb-scrd-itms'));
+
+	for (i in bowlerrows) {
+		let bowlercols = await bowlerrows[i].findElements(wd.By.css('div'));
+		let data = {};
+		if(bowlercols.length == 8){
+			for (j in bowlercols) {
+				data[bowlerkeys[j]] = await bowlercols[j].getAttribute('innerText');
+			}
+			bowlerData.push(data);
+		}
+	}
+
+	for(i in urls){
+		let browser = new wd.Builder().forBrowser('chrome').build();
+		await browser.get(urls[i]);
+		await browser.close()
+	}
+
+	console.log(batsmanData);
+	console.log(bowlerData);
+	console.log(urls);
+
+	
+	await browser.close();
+}
+
+main();
