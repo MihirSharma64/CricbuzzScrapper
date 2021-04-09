@@ -20,10 +20,10 @@ async function getCareerData(url, i, totalPlayers) {
 	let browser = new wd.Builder().forBrowser('chrome').build();
 	await browser.get(url);
 	let tables = await browser.findElements(wd.By.css('table.cb-col-100.cb-plyr-thead'));
-	for (j in tables) {
+	for (let j in tables) {
 		let data = {};
 		let rows = await tables[j].findElements(wd.By.css('tbody tr'));
-		for (row of rows) {
+		for (let row of rows) {
 			let tempdata = {};
 			let cols = await row.findElements(wd.By.css('td'));
 			let keyArr = batsmankeys;
@@ -76,7 +76,7 @@ async function main() {
 
 	let bowlerrows = await alltables[1].findElements(wd.By.css('.cb-col.cb-col-100.cb-scrd-itms'));
 
-	for (i in bowlerrows) {
+	for (let i in bowlerrows) {
 		let bowlercols = await bowlerrows[i].findElements(wd.By.css('div'));
 		if (bowlercols.length == 8) {
 			let url = await bowlercols[0].findElement(wd.By.css('a')).getAttribute('href');
@@ -86,7 +86,7 @@ async function main() {
 		}
 	}
 
-	for (i in urls) {
+	for (let i in urls) {
 		getCareerData(urls[i], i, urls.length);
 	}
 
